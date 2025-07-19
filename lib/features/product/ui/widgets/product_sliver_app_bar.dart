@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
 
@@ -10,7 +12,7 @@ class ProductSliverAppBar extends StatelessWidget {
     return SliverAppBar(
       floating: true,
       pinned: true,
-      expandedHeight: 80.0,
+      expandedHeight: 100.0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
@@ -32,8 +34,13 @@ class ProductSliverAppBar extends StatelessWidget {
                   ).copyWith(color: ColorsTheme().whiteColor),
                 ),
                 IconButton(
-                  icon: Icon(Icons.search, color: ColorsTheme().whiteColor),
-                  onPressed: () {},
+                  icon: Icon(
+                    Icons.shopping_cart,
+                    color: ColorsTheme().whiteColor,
+                  ),
+                  onPressed: () {
+                    context.push(Routes.cart);
+                  },
                 ),
               ],
             ),

@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-class CartRepo {
+class ProductCartRepo {
   static const String boxName = 'cartBox';
   static Box<Map>? _box;
 
@@ -12,7 +12,7 @@ class CartRepo {
   }
 
   static Future<void> addToCart(int productId, int quantity) async {
-    final box = await CartRepo.box;
+    final box = await ProductCartRepo.box;
     box.put(productId.toString(), {
       'productId': productId,
       'quantity': quantity,
@@ -20,7 +20,7 @@ class CartRepo {
   }
 
   static Future<void> updateQuantity(int productId, int quantity) async {
-    final box = await CartRepo.box;
+    final box = await ProductCartRepo.box;
     if (quantity > 0) {
       box.put(productId.toString(), {
         'productId': productId,
@@ -32,13 +32,13 @@ class CartRepo {
   }
 
   static Future<int> getQuantity(int productId) async {
-    final box = await CartRepo.box;
+    final box = await ProductCartRepo.box;
     final item = box.get(productId.toString());
     return item?['quantity'] ?? 0;
   }
 
   static Future<void> clearCart() async {
-    final box = await CartRepo.box;
+    final box = await ProductCartRepo.box;
     await box.clear();
   }
 }

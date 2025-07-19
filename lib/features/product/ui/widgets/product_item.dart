@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
+import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
 import 'package:wasel/features/product/manager/cubit/products_cart_cubit.dart';
@@ -13,18 +16,22 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductsCartCubit, ProductsCartState>(
-      builder: (context, state) {
-        final cartCubit = context.read<ProductsCartCubit>();
-        final quantity = cartCubit.getQuantity(product.id);
+    return ValueListenableBuilder(
+      valueListenable: Hive.box<Map>('cartBox').listenable(),
+      builder: (context, box, child) {
+        final cartItem = box.get(product.id.toString());
+        final quantity = cartItem?['quantity'] ?? 0;
+
+        // للتحقق من القيمة
+        print('Product ID: ${product.id}, Quantity from cartBox: $quantity');
 
         return Card(
           elevation: 8,
-          shadowColor: ColorsTheme().primaryDark.withOpacity(0.3),
+          shadowColor: ColorsTheme().primaryDark.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
-              color: ColorsTheme().primaryLight.withOpacity(0.2),
+              color: ColorsTheme().primaryLight.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -36,7 +43,7 @@ class ProductItem extends StatelessWidget {
                 flex: 1,
                 child: GestureDetector(
                   onTap: () {
-                    context.push('/product-details', extra: product);
+                    context.push(Routes.productDetails, extra: product);
                   },
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(
@@ -50,8 +57,9 @@ class ProductItem extends StatelessWidget {
                         loadingBuilder: (context, child, progress) {
                           if (progress == null) return child;
                           return Center(
-                            child: CircularProgressIndicator(
+                            child: SpinKitThreeBounce(
                               color: ColorsTheme().primaryColor,
+                              size: 24.0,
                             ),
                           );
                         },
@@ -98,8 +106,11 @@ class ProductItem extends StatelessWidget {
                               Icons.remove,
                               color: ColorsTheme().primaryColor,
                             ),
-                            onPressed: () =>
-                                cartCubit.decrementQuantity(product.id),
+                            onPressed: () {
+                              final cartCubit = context
+                                  .read<ProductsCartCubit>();
+                              cartCubit.decrementQuantity(product.id);
+                            },
                           ),
                           Text(
                             '$quantity',
@@ -110,11 +121,18 @@ class ProductItem extends StatelessWidget {
                               Icons.add,
                               color: ColorsTheme().primaryColor,
                             ),
-                            onPressed: () =>
-                                cartCubit.incrementQuantity(product.id),
+                            onPressed: () {
+                              final cartCubit = context
+                                  .read<ProductsCartCubit>();
+                              cartCubit.incrementQuantity(product.id);
+                            },
                           ),
                           GestureDetector(
-                            onTap: () => cartCubit.removeFromCart(product.id),
+                            onTap: () {
+                              final cartCubit = context
+                                  .read<ProductsCartCubit>();
+                              cartCubit.removeFromCart(product.id);
+                            },
                             child: Icon(
                               Icons.delete,
                               color: ColorsTheme().errorColor,
@@ -124,7 +142,10 @@ class ProductItem extends StatelessWidget {
                       ),
                     ] else ...[
                       ElevatedButton(
-                        onPressed: () => cartCubit.addToCart(product.id),
+                        onPressed: () {
+                          final cartCubit = context.read<ProductsCartCubit>();
+                          cartCubit.addToCart(product.id);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsTheme().primaryLight,
                           foregroundColor: ColorsTheme().whiteColor,
