@@ -3,7 +3,7 @@ import 'package:wasel/core/helper_network/app_const.dart';
 import 'package:wasel/core/helper_network/dio_helper.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
 import 'package:wasel/features/product/data/product_hive_helper.dart';
-import 'package:wasel/features/product/data/repo/product_repo.dart';
+import 'package:wasel/features/product/data/repo/product_repo/product_repo.dart';
 
 class ProductRepoImpl implements ProductRepo {
   final DioHelper _dioHelper = DioHelper();
@@ -12,10 +12,10 @@ class ProductRepoImpl implements ProductRepo {
   @override
   Future<List<Product>> fetchProducts() async {
     try {
-      final _productsBox = await _productsBoxFuture;
+      final productsBox = await _productsBoxFuture;
 
-      if (_productsBox.isNotEmpty) {
-        return _productsBox.values.toList();
+      if (productsBox.isNotEmpty) {
+        return productsBox.values.toList();
       }
 
       final response = await _dioHelper.getData(url: AppConst.products);
@@ -23,7 +23,7 @@ class ProductRepoImpl implements ProductRepo {
       final products = data.map((json) => Product.fromJson(json)).toList();
 
       for (var product in products) {
-        await _productsBox.put(product.id.toString(), product);
+        await productsBox.put(product.id.toString(), product);
       }
 
       return products;

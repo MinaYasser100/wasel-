@@ -8,7 +8,6 @@ class HiveService<T> {
   /// إضافة عنصر جديد إلى Hive
   Future<void> add(String key, T value) async {
     await box.put(key, value);
-    print('the customer added successfully');
   }
 
   /// تحديث عنصر موجود

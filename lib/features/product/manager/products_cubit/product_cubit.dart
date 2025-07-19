@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
 import 'package:wasel/core/internet_check/cubit/internet_check__cubit.dart';
 import 'package:wasel/core/internet_check/ui/internet_dialge.dart';
-import 'package:wasel/features/product/data/repo/product_repo.dart';
+import 'package:wasel/features/product/data/repo/product_repo/product_repo.dart';
 
 part 'product_state.dart';
 

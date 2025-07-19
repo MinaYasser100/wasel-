@@ -1,6 +1,9 @@
 import 'package:go_router/go_router.dart';
+import 'package:wasel/core/helper_network/model/product_model.dart';
+import 'package:wasel/core/routing/animation_route.dart';
 import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/features/product/ui/product_view.dart';
+import 'package:wasel/features/product_details/ui/product_details_view.dart';
 
 abstract class AppRouter {
   static final router = GoRouter(
@@ -8,7 +11,15 @@ abstract class AppRouter {
     routes: [
       GoRoute(
         path: Routes.productList,
-        builder: (context, state) => const ProductsView(),
+        pageBuilder: (context, state) => fadeTransitionPage(ProductsView()),
+      ),
+      GoRoute(
+        path: Routes.productDetails,
+        pageBuilder: (context, state) {
+          final product = state.extra as Product?;
+          if (product == null) throw Exception('Product not found');
+          return fadeTransitionPage(ProductDetailsView(product: product));
+        },
       ),
     ],
   );

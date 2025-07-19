@@ -12,7 +12,7 @@ class Routes {
 
   // Static route constants
   static const String productList = '/';
-  static const String productDetails = '/product/:id';
+  static const String productDetails = '/product-details';
   static const String cart = '/cart';
   static const String login = '/login';
 }
