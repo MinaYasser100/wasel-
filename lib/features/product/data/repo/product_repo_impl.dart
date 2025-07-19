@@ -1,17 +1,34 @@
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:wasel/core/helper_network/app_const.dart';
 import 'package:wasel/core/helper_network/dio_helper.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
+import 'package:wasel/features/product/data/product_hive_helper.dart';
 import 'package:wasel/features/product/data/repo/product_repo.dart';
 
 class ProductRepoImpl implements ProductRepo {
   final DioHelper _dioHelper = DioHelper();
+  final Future<Box<Product>> _productsBoxFuture = ProductHiveHelper.box;
+
   @override
   Future<List<Product>> fetchProducts() async {
     try {
-      final response = await _dioHelper.getData(url: 'products');
+      final _productsBox = await _productsBoxFuture;
+
+      if (_productsBox.isNotEmpty) {
+        return _productsBox.values.toList();
+      }
+
+      final response = await _dioHelper.getData(url: AppConst.products);
       final List<dynamic> data = response.data['products'];
-      return data.map((json) => Product.fromJson(json)).toList();
+      final products = data.map((json) => Product.fromJson(json)).toList();
+
+      for (var product in products) {
+        await _productsBox.put(product.id.toString(), product);
+      }
+
+      return products;
     } catch (e) {
-      throw Exception('Failed to fetch products');
+      throw Exception('Failed to fetch products: $e');
     }
   }
 }
