@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:go_router/go_router.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
+import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
 import 'package:wasel/core/widgets/error_widget.dart';
@@ -43,6 +45,13 @@ class CartBodyView extends StatelessWidget {
                 ),
               );
             }
+            double totalCartPrice = cartItems.fold(0.0, (sum, item) {
+              final product = item['product'] as Product;
+              final quantity = context.read<ProductsCartCubit>().getQuantity(
+                product.id,
+              );
+              return sum + product.price * quantity;
+            });
             return CustomScrollView(
               slivers: [
                 SliverPadding(
@@ -53,6 +62,54 @@ class CartBodyView extends StatelessWidget {
                       final product = item['product'] as Product;
                       return CartItemCard(product: product, index: index);
                     }, childCount: cartItems.length),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: ColorsTheme().whiteColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          '\$${totalCartPrice.toStringAsFixed(2)}',
+                          style: AppTextStyles.styleBold20sp(
+                            context,
+                          ).copyWith(color: ColorsTheme().primaryDark),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.push(Routes.login);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ColorsTheme().primaryColor,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Checkout',
+                            style: AppTextStyles.styleBold20sp(
+                              context,
+                            ).copyWith(color: ColorsTheme().whiteColor),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

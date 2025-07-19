@@ -30,7 +30,6 @@ class ProductsCartCubit extends Cubit<ProductsCartState> {
   }
 
   void removeFromCart(int productId) async {
-    final box = await ProductCartRepo.box;
     cartItems.remove(productId);
     ProductCartRepo.updateQuantity(productId, 0);
     emit(ProductsCartUpdated(cartItems));

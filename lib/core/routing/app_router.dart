@@ -3,8 +3,10 @@ import 'package:wasel/core/helper_network/model/product_model.dart';
 import 'package:wasel/core/routing/animation_route.dart';
 import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/features/cart/ui/cart_view.dart';
+import 'package:wasel/features/login/ui/login_view.dart';
 import 'package:wasel/features/product/ui/product_view.dart';
 import 'package:wasel/features/product_details/ui/product_details_view.dart';
+import 'package:wasel/features/signup/ui/signup_view.dart';
 
 abstract class AppRouter {
   static final router = GoRouter(
@@ -25,6 +27,14 @@ abstract class AppRouter {
       GoRoute(
         path: Routes.cart,
         pageBuilder: (context, state) => fadeTransitionPage(CartView()),
+      ),
+      GoRoute(
+        path: Routes.login,
+        pageBuilder: (context, state) => fadeTransitionPage(LoginView()),
+      ),
+      GoRoute(
+        path: Routes.signUp,
+        pageBuilder: (context, state) => fadeTransitionPage(SignUpview()),
       ),
     ],
   );

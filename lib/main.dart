@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -11,7 +12,7 @@ import 'package:wasel/features/product/data/product_hive_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp();
   // تعامل مع الأخطاء العامة
   runZonedGuarded(() async {
     // Wait for all dependencies to be ready
