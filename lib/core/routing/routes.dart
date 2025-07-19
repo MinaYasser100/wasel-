@@ -1,15 +1,18 @@
 class Routes {
-  static String onboarding = '/';
-  static String layoutScreens = '/layoutScreens';
-  static String uploadData = '/uploadData';
-  static String plantDetectedView = '/plantDetectedView';
-  static String oneCategory = '/oneCategory';
-  static String plantDetails = '/plantDetails';
-  static String adviceScreen = '/adviceScreen';
-  static String plantsSelectionScreen = '/PlantsSelectionScreen';
-  static String userTypeSelectionScreen = '/UserTypeSelectionScreen';
-  static String speciesDetailsCategory = '/speciesDetailsCategory';
-  static String speciesDetailsView = '/speciesDetailsView';
-  static String plantSearchView = '/plantSearchView';
-  static String speciesSearchView = '/speciesSearchView';
+  // Singleton instance
+  static final Routes _instance = Routes._internal();
+
+  // Private constructor
+  Routes._internal();
+
+  // Factory constructor to return the same instance
+  factory Routes() {
+    return _instance;
+  }
+
+  // Static route constants
+  static const String productList = '/';
+  static const String productDetails = '/product/:id';
+  static const String cart = '/cart';
+  static const String login = '/login';
 }

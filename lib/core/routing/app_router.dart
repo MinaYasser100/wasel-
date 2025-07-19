@@ -1,7 +1,17 @@
 import 'package:go_router/go_router.dart';
+import 'package:wasel/core/routing/routes.dart';
+import 'package:wasel/features/product/ui/product_view.dart';
 
 abstract class AppRouter {
-  static final List<GoRoute> routes = [];
+  static final router = GoRouter(
+    initialLocation: Routes.productList,
+    routes: [
+      GoRoute(
+        path: Routes.productList,
+        builder: (context, state) => const ProductsView(),
+      ),
+    ],
+  );
 }
 
 // Future<String> getFirstScreen() async {
