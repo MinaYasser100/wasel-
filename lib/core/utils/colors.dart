@@ -11,16 +11,16 @@ class ColorsTheme {
   factory ColorsTheme() => _instance;
 
   // Primary color and its shades
-  final primaryColor = const Color.fromARGB(255, 46, 64, 125);
-  final primaryLight = const Color.fromARGB(255, 72, 105, 161);
-  final primaryDark = const Color.fromARGB(255, 36, 32, 94);
+  final primaryColor = const Color(0xFF4A90E2); // Azure Blue
+  final primaryLight = const Color(0xFF7ABAF2); // Light Blue
+  final primaryDark = const Color(0xFF2E4374); // Dark Blue
 
   // Accent color for highlights
-  final accentColor = const Color.fromARGB(255, 129, 142, 199);
+  final accentColor = const Color(0xFF27AE60); // Soft Green
 
   // Neutral colors
   final whiteColor = Colors.white;
-  final backgroundColor = const Color.fromARGB(255, 245, 245, 245);
+  final backgroundColor = const Color(0xFFF5F7FA); // Light Grayish Blue
   final cardColor = Colors.white;
 
   // Error color
