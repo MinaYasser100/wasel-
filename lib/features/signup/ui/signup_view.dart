@@ -5,6 +5,7 @@ import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
 import 'package:wasel/features/signup/manager/sign_up_cubit.dart';
+import 'package:wasel/features/signup/ui/widgets/sign_up_container.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -59,145 +60,48 @@ class _SignUpViewState extends State<SignUpView> {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 80,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.person_add,
-                      color: ColorsTheme().whiteColor,
-                      size: 80,
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Create Account',
-                      style: TextStyle(
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 80,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.person_add,
                         color: ColorsTheme().whiteColor,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
+                        size: 80,
                       ),
-                    ),
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: ColorsTheme().whiteColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white24),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Create Account',
+                        style: AppTextStyles.styleBold28sp(context).copyWith(
+                          color: ColorsTheme().whiteColor,
+                          letterSpacing: 1,
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          _buildInputField(
-                            icon: Icons.email_outlined,
-                            hint: "Email",
-                            obscure: false,
-                            controller: emailController,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildInputField(
-                            icon: Icons.lock_outline,
-                            hint: "Password",
-                            obscure: true,
-                            controller: passwordController,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildInputField(
-                            icon: Icons.lock_outline,
-                            hint: "Confirm Password",
-                            obscure: true,
-                            controller: confirmPasswordController,
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorsTheme().whiteColor,
-                                foregroundColor: ColorsTheme().primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: state is SignUpLoading
-                                  ? null
-                                  : () {
-                                      if (passwordController.text ==
-                                          confirmPasswordController.text) {
-                                        context.read<SignUpCubit>().signUp(
-                                          email: emailController.text.trim(),
-                                          password: passwordController.text,
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Passwords do not match",
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                              child: state is SignUpLoading
-                                  ? const CircularProgressIndicator()
-                                  : Text(
-                                      "SIGN UP",
-                                      style: AppTextStyles.styleBold18sp(
-                                        context,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          TextButton(
-                            onPressed: () {
-                              context.push(Routes.login);
-                            },
-                            child: Text(
-                              "Already have an account? Login",
-                              style: TextStyle(color: ColorsTheme().whiteColor),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 40),
+                      SignUpContainer(
+                        emailController: emailController,
+                        passwordController: passwordController,
+                        confirmPasswordController: confirmPasswordController,
+                        isLoading: state is SignUpLoading,
+                        onSignUpPressed: () {
+                          context.read<SignUpCubit>().signUp(
+                            email: emailController.text.trim(),
+                            password: passwordController.text,
+                          );
+                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required IconData icon,
-    required String hint,
-    required bool obscure,
-    required TextEditingController controller,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      style: TextStyle(color: ColorsTheme().whiteColor),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.white70),
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white54),
-        filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.1),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
       ),
     );
   }

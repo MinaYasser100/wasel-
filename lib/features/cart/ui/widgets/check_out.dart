@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
-import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
 import 'package:wasel/features/cart/manager/cubit/cart_cubit.dart';
+import 'package:wasel/features/cart/ui/widgets/checkout_header.dart';
 import 'package:wasel/features/login/manager/login_cubit.dart';
 import 'package:wasel/features/product/manager/cubit/products_cart_cubit.dart';
-import 'package:hive/hive.dart';
+
+import 'checkout_actions.dart';
+import 'order_summary.dart';
 
 class CheckoutView extends StatelessWidget {
   const CheckoutView({super.key});
@@ -80,258 +81,14 @@ class CheckoutView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Checkout',
-                              style: AppTextStyles.styleBold28sp(context)
-                                  .copyWith(
-                                    color: ColorsTheme().whiteColor,
-                                    letterSpacing: 1,
-                                  ),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
-                                color: ColorsTheme().whiteColor,
-                              ),
-                              onPressed: () => context.go(Routes.productList),
-                            ),
-                          ],
-                        ),
+                        CheckoutHeader(),
                         const SizedBox(height: 20),
-
-                        // Cart Items
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white24),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Order Summary',
-                                style: AppTextStyles.styleBold20sp(
-                                  context,
-                                ).copyWith(color: ColorsTheme().whiteColor),
-                              ),
-                              const SizedBox(height: 16),
-                              ...cartItems.asMap().entries.map((entry) {
-                                final item = entry.value;
-                                final product = item['product'] as Product;
-                                final quantity = context
-                                    .read<ProductsCartCubit>()
-                                    .getQuantity(product.id);
-                                final totalPrice = product.price * quantity;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: Row(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.network(
-                                          product.thumbnail,
-                                          width: 60,
-                                          height: 60,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              product.title,
-                                              style:
-                                                  AppTextStyles.styleBold16sp(
-                                                    context,
-                                                  ).copyWith(
-                                                    color: ColorsTheme()
-                                                        .whiteColor,
-                                                  ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              'Quantity: $quantity',
-                                              style:
-                                                  AppTextStyles.styleRegular14sp(
-                                                    context,
-                                                  ).copyWith(
-                                                    color: Colors.white70,
-                                                  ),
-                                            ),
-                                            Text(
-                                              '\$${totalPrice.toStringAsFixed(2)}',
-                                              style:
-                                                  AppTextStyles.styleBold14sp(
-                                                    context,
-                                                  ).copyWith(
-                                                    color: ColorsTheme()
-                                                        .whiteColor,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Total:',
-                                    style: AppTextStyles.styleBold20sp(
-                                      context,
-                                    ).copyWith(color: ColorsTheme().whiteColor),
-                                  ),
-                                  Text(
-                                    '\$${totalCartPrice.toStringAsFixed(2)}',
-                                    style: AppTextStyles.styleBold20sp(
-                                      context,
-                                    ).copyWith(color: ColorsTheme().whiteColor),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        OrderSummary(
+                          cartItems: cartItems,
+                          totalCartPrice: totalCartPrice,
                         ),
                         const SizedBox(height: 24),
-
-                        // Confirm Purchase Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorsTheme().whiteColor,
-                              foregroundColor: ColorsTheme().primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (showContext) => AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  title: Text(
-                                    'Confirm Purchase',
-                                    style: AppTextStyles.styleBold20sp(
-                                      showContext,
-                                    ),
-                                  ),
-                                  content: Text(
-                                    'Are you sure you want to complete this purchase for \$${totalCartPrice.toStringAsFixed(2)}?',
-                                    style: AppTextStyles.styleRegular16sp(
-                                      showContext,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(showContext),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            ColorsTheme().primaryColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pop(showContext);
-                                        ScaffoldMessenger.of(
-                                          showContext,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Purchase completed successfully!',
-                                            ),
-                                          ),
-                                        );
-                                        context.read<CartCubit>().clearCart();
-                                        context.go(Routes.productList);
-                                      },
-                                      child: Text(
-                                        'Confirm',
-                                        style: TextStyle(
-                                          color: ColorsTheme().whiteColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Confirm Purchase',
-                              style: AppTextStyles.styleBold18sp(
-                                context,
-                              ).copyWith(color: ColorsTheme().primaryColor),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Logout Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.white70),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () async {
-                              await context.read<AuthCubit>().logout();
-                              final authBox = await Hive.openBox('authBox');
-                              await authBox.put('isLoggedIn', false);
-                              await authBox.delete('userId');
-                              context.go(Routes.login);
-                            },
-                            child: Text(
-                              'Logout',
-                              style: AppTextStyles.styleBold18sp(
-                                context,
-                              ).copyWith(color: ColorsTheme().whiteColor),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Back to Products
-                        Center(
-                          child: TextButton(
-                            onPressed: () => context.go(Routes.productList),
-                            child: Text(
-                              'Continue Shopping',
-                              style: AppTextStyles.styleRegular16sp(
-                                context,
-                              ).copyWith(color: Colors.white70),
-                            ),
-                          ),
-                        ),
+                        CheckoutActions(totalCartPrice: totalCartPrice),
                       ],
                     ),
                   );
