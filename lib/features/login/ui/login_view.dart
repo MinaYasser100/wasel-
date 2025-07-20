@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wasel/core/routing/routes.dart';
+import 'package:wasel/core/theme/app_style.dart';
+import 'package:wasel/core/utils/colors.dart';
 import 'package:wasel/features/login/manager/login_cubit.dart';
+import 'package:wasel/features/login/ui/widgets/auth_container.dart';
+import 'package:wasel/features/login/ui/widgets/auth_footer.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -32,7 +36,7 @@ class _LoginViewState extends State<LoginView> {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text("Login successful")));
-            context.go(Routes.productList); // غيّرها حسب مسار الشاشة الرئيسية
+            context.go(Routes.checkout); // غيّرها حسب مسار الشاشة الرئيسية
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(
               context,
@@ -44,137 +48,55 @@ class _LoginViewState extends State<LoginView> {
             body: Container(
               width: double.infinity,
               height: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF1E3C72), Color(0xFF2A5298)],
+                  colors: [
+                    ColorsTheme().primaryColor,
+                    ColorsTheme().primaryLight,
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 80,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.lock, color: Colors.white, size: 80),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Welcome Back!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 80,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.lock, color: Colors.white, size: 80),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Welcome Back!',
+                        style: AppTextStyles.styleBold28sp(context).copyWith(
+                          color: ColorsTheme().whiteColor,
+                          letterSpacing: 1,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white24),
+                      const SizedBox(height: 40),
+                      AuthContainer(
+                        emailController: emailController,
+                        passwordController: passwordController,
+                        isLoading: state is AuthLoading,
+                        onLoginPressed: () {
+                          context.read<AuthCubit>().login(
+                            email: emailController.text.trim(),
+                            password: passwordController.text,
+                          );
+                        },
                       ),
-                      child: Column(
-                        children: [
-                          _buildInputField(
-                            icon: Icons.email_outlined,
-                            hint: "Email",
-                            obscure: false,
-                            controller: emailController,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildInputField(
-                            icon: Icons.lock_outline,
-                            hint: "Password",
-                            obscure: true,
-                            controller: passwordController,
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFF1E3C72),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: state is AuthLoading
-                                  ? null
-                                  : () {
-                                      context.read<AuthCubit>().login(
-                                        email: emailController.text.trim(),
-                                        password: passwordController.text,
-                                      );
-                                    },
-                              child: state is AuthLoading
-                                  ? const CircularProgressIndicator()
-                                  : const Text(
-                                      "LOGIN",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "Forgot password?",
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    GestureDetector(
-                      onTap: () {
-                        context.push(Routes.signUp);
-                      },
-                      child: const Text(
-                        "Don't have an account? Sign Up",
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ),
-                  ],
+                      const SizedBox(height: 40),
+                      const AuthFooter(),
+                    ],
+                  ),
                 ),
               ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required IconData icon,
-    required String hint,
-    required bool obscure,
-    required TextEditingController controller,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.white70),
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white54),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
       ),
     );
   }

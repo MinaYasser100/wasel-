@@ -44,4 +44,18 @@ class CartCubit extends Cubit<CartState> {
     }
     return cartItems;
   }
+
+  // دالة لتفريغ السلة
+  Future<void> clearCart() async {
+    emit(CartLoading());
+    try {
+      // تفريغ cartItems في ProductsCartCubit
+      final box = Hive.box<Map>('cartBox');
+      await box.clear(); // مسح كل البيانات من cartBox
+      productsCartCubit.cartItems.clear(); // تفريغ القائمة المحلية
+      emit(CartLoaded([])); // إصدار حالة سلة فاضية
+    } catch (e) {
+      emit(CartError('Failed to clear cart: $e'));
+    }
+  }
 }

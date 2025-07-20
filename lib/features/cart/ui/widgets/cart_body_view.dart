@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 import 'package:wasel/core/helper_network/model/product_model.dart';
 import 'package:wasel/core/routing/routes.dart';
 import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
+import 'package:wasel/core/utils/constant.dart';
 import 'package:wasel/core/widgets/error_widget.dart';
 import 'package:wasel/features/cart/manager/cubit/cart_cubit.dart';
 import 'package:wasel/features/cart/ui/widgets/cart_item_card.dart';
@@ -91,8 +93,22 @@ class CartBodyView extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         ElevatedButton(
-                          onPressed: () {
-                            context.push(Routes.login);
+                          onPressed: () async {
+                            final authBox = await Hive.openBox(
+                              ConstantVariable.authBox,
+                            );
+                            final isLoggedIn = authBox.get(
+                              ConstantVariable.authKey,
+                              defaultValue: false,
+                            );
+                            // Log للتحقق
+                            debugPrint('isLoggedIn: $isLoggedIn');
+                            debugPrint('authBox values: ${authBox.toMap()}');
+                            if (isLoggedIn) {
+                              context.go(Routes.checkout); // صفحة الـ Checkout
+                            } else {
+                              context.push(Routes.login); // صفحة الـ Login
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ColorsTheme().primaryColor,
