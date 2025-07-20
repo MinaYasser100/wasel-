@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wasel/core/theme/app_style.dart';
 import 'package:wasel/core/utils/colors.dart';
+import 'package:wasel/features/login/manager/forget_password_cubit/forgot_password_cubit.dart';
 import 'package:wasel/features/login/ui/widgets/custom_input_field.dart';
+
+import 'forget_password_dialog.dart';
 
 class AuthContainer extends StatelessWidget {
   final TextEditingController emailController;
@@ -69,18 +74,20 @@ class AuthContainer extends StatelessWidget {
                     },
               child: isLoading
                   ? const CircularProgressIndicator()
-                  : const Text(
-                      "LOGIN",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  : Text("LOGIN", style: AppTextStyles.styleBold18sp(context)),
             ),
           ),
           const SizedBox(height: 16),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (dialogContext) => BlocProvider(
+                  create: (_) => ForgotPasswordCubit(),
+                  child: ForgotPasswordDialog(emailController: emailController),
+                ),
+              );
+            },
             child: Text(
               "Forgot password?",
               style: TextStyle(color: ColorsTheme().whiteColor),
