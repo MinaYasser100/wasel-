@@ -28,7 +28,7 @@ class CartItemCard extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              ColorsTheme().primaryLight.withOpacity(0.2),
+              ColorsTheme().primaryLight.withValues(alpha: 0.2),
               ColorsTheme().whiteColor,
             ],
             begin: Alignment.topLeft,
@@ -37,7 +37,7 @@ class CartItemCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: ColorsTheme().primaryDark.withOpacity(0.1),
+              color: ColorsTheme().primaryDark.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),

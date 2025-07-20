@@ -18,7 +18,7 @@ class CircularButton extends StatelessWidget {
       onTap: onPressed,
       child: CircleAvatar(
         radius: 16,
-        backgroundColor: color.withOpacity(0.2),
+        backgroundColor: color.withValues(alpha: 0.2),
         child: Icon(icon, size: 16, color: color),
       ),
     );

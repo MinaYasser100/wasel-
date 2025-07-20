@@ -1,9 +1,9 @@
 import 'dart:developer';
 
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:meta/meta.dart';
 import 'package:wasel/core/utils/constant.dart';
 
 part 'login_state.dart';

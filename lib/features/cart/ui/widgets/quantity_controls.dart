@@ -25,7 +25,7 @@ class QuantityControls extends StatelessWidget {
           'Quantity: ',
           style: AppTextStyles.styleRegular14sp(
             context,
-          ).copyWith(color: ColorsTheme().primaryDark.withOpacity(0.7)),
+          ).copyWith(color: ColorsTheme().primaryDark.withValues(alpha: 0.7)),
         ),
         CircularButton(
           icon: Icons.remove,
